@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { PERMISSION_FILTER_FIELDS } from "@/constants/permission.filter-fields";
 import { cn } from "@/lib/utils";
+import { createSearchFilterExpression } from "@/lib/object.util";
 
 interface PermissionsProps {
   className?: string;
@@ -75,9 +76,12 @@ export default function Permissions({ className }: PermissionsProps) {
           debouncedSortDetails.order ? "ASC" : "DESC"
         }`,
         debouncedSearchTerm
-          ? `(${Object.values(PERMISSION_FILTER_FIELDS)
-              .map((field) => `${field}||$cont||${debouncedSearchTerm}`)
-              .join(";")}})`
+          ? createSearchFilterExpression(
+              PERMISSION_FILTER_FIELDS,
+              "||$cont||",
+              debouncedSearchTerm,
+              ";"
+            )
           : ""
       ),
   });

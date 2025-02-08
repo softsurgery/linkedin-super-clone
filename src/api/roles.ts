@@ -1,30 +1,21 @@
 import axios from "axios";
 import { Paginated } from "@/lib/prisma/interfaces/pagination";
-import { ROLE_FILTER_ATTRIBUTES } from "@/constants/role.filter-fields";
 import { Role } from "@/types/user-management";
 
 const findPaginated = async (
   page: number = 1,
   size: number = 5,
-  order: "ASC" | "DESC" = "ASC",
-  sortKey: string,
-  search: string = "",
+  sort: string,
+  filter: string = "",
   fields: string[] = [],
   join: string[] = ["permissions.permission"]
 ): Promise<Paginated<Role>> => {
-  const filter = search
-    ? "(" +
-    Object.values(ROLE_FILTER_ATTRIBUTES)
-      .map((key) => `${key}||$cont||${search}`)
-      .join(";") +
-    ")"
-    : "";
   const response = await axios.get<Paginated<Role>>(`/api/roles/list?`, {
     params: {
-      filter,
       page,
       size,
-      sort: `${sortKey}:${order}`,
+      sort,
+      filter,
       fields: fields ? fields.join(",") : "",
       join: join ? join.join(",") : "",
     },

@@ -1,8 +1,8 @@
+import React from "react";
 import { api } from "@/api";
 import ContentSection from "@/components/Common/ContentSection";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
 import { RoleActionsContext } from "./data-table/action-context";
 import { DataTable } from "./data-table/data-table";
 import { getRoleColumns } from "./data-table/columns";
@@ -14,6 +14,8 @@ import { useRoleDeleteDialog } from "./modals/RoleDeleteDialog";
 import { useRoleDuplicateDialog } from "./modals/RoleDuplicateDialog";
 import { toast } from "sonner";
 import { CreateRoleDto, UpdateRoleDto } from "@/types/user-management";
+import { ROLE_FILTER_ATTRIBUTES } from "@/constants/role.filter-fields";
+import { createSearchFilterExpression } from "@/lib/object.util";
 
 export default function Roles() {
   const { setRoutes } = useBreadcrumb();
@@ -66,9 +68,17 @@ export default function Roles() {
       api.role.findPaginated(
         debouncedPage,
         debouncedSize,
-        debouncedSortDetails.order ? "ASC" : "DESC",
-        debouncedSortDetails.sortKey,
+        `${debouncedSortDetails.sortKey}:${
+          debouncedSortDetails.order ? "ASC" : "DESC"
+        }`,
         debouncedSearchTerm
+          ? createSearchFilterExpression(
+              ROLE_FILTER_ATTRIBUTES,
+              "||$cont||",
+              debouncedSearchTerm,
+              ";"
+            )
+          : ""
       ),
   });
 
@@ -118,18 +128,18 @@ export default function Roles() {
   });
 
   const { mutate: duplicateRole, isPending: isDuplicationPending } =
-     useMutation({
-       mutationFn: (id?: number) => api.role.duplicate(id),
-       onSuccess: () => {
-         toast("Role Duplicated Successfully");
-         refetchRoles();
-         roleManager.reset();
-         closeDuplicateRoleDialog();
-       },
-       onError: (error) => {
-         toast(error.message);
-       },
-     });
+    useMutation({
+      mutationFn: (id?: number) => api.role.duplicate(id),
+      onSuccess: () => {
+        toast("Role Duplicated Successfully");
+        refetchRoles();
+        roleManager.reset();
+        closeDuplicateRoleDialog();
+      },
+      onError: (error) => {
+        toast(error.message);
+      },
+    });
 
   const handleCreateSubmit = () => {
     const data = roleManager.getRole();
@@ -151,8 +161,8 @@ export default function Roles() {
         label: data.label,
         description: data.description,
         permissionIds: roleManager.permissions
-        ?.map((permission) => permission.id)
-        .filter((id): id is number => id !== undefined),
+          ?.map((permission) => permission.id)
+          .filter((id): id is number => id !== undefined),
       },
     });
   };
@@ -179,16 +189,16 @@ export default function Roles() {
       resetRole: () => roleManager.reset(),
     });
 
-   const {
-     duplicateRoleDialog,
-     openDuplicateRoleDialog,
-     closeDuplicateRoleDialog,
-   } = useRoleDuplicateDialog({
-     roleLabel: roleManager.label,
-     duplicateRole: () => duplicateRole(roleManager.id),
-     isDuplicationPending,
-     resetRole: () => roleManager.reset(),
-   });
+  const {
+    duplicateRoleDialog,
+    openDuplicateRoleDialog,
+    closeDuplicateRoleDialog,
+  } = useRoleDuplicateDialog({
+    roleLabel: roleManager.label,
+    duplicateRole: () => duplicateRole(roleManager.id),
+    isDuplicationPending,
+    resetRole: () => roleManager.reset(),
+  });
 
   const context = {
     openCreateRoleSheet,

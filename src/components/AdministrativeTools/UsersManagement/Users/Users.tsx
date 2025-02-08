@@ -17,6 +17,8 @@ import { User } from "@/types/user-management";
 import { useUserDeleteDialog } from "./modals/UserDeleteDialog";
 import { useActivateUserDialog } from "./modals/UserActivateDialog";
 import { useDeactivateUserDialog } from "./modals/UserDeactivateDialog";
+import { createSearchFilterExpression } from "@/lib/object.util";
+import { USER_FILTER_ATTRIBUTES } from "@/constants/user.filter-fields";
 
 export default function Users() {
   const { setRoutes } = useBreadcrumb();
@@ -70,9 +72,17 @@ export default function Users() {
       api.user.findPaginated(
         debouncedPage,
         debouncedSize,
-        debouncedSortDetails.order ? "ASC" : "DESC",
-        debouncedSortDetails.sortKey,
+        `${debouncedSortDetails.sortKey}:${
+          debouncedSortDetails.order ? "ASC" : "DESC"
+        }`,
         debouncedSearchTerm
+          ? createSearchFilterExpression(
+              USER_FILTER_ATTRIBUTES,
+              "||$cont||",
+              debouncedSearchTerm,
+              ";"
+            )
+          : ""
       ),
   });
 
