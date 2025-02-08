@@ -21,9 +21,9 @@ import { useDeactivateUserDialog } from "./modals/UserDeactivateDialog";
 export default function Users() {
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
-      { title: "User Management", href: "/user-management" },
-      { title: "User", href: "/user-management/users" },
+    setRoutes?.([
+      { title: "User Management" },
+      { title: "Users", href: "/users-management/users" },
     ]);
   }, []);
 

@@ -18,9 +18,9 @@ import { CreateRoleDto, UpdateRoleDto } from "@/types/user-management";
 export default function Roles() {
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
-      { title: "User Management", href: "/user-management" },
-      { title: "Role", href: "/user-management/roles" },
+    setRoutes?.([
+      { title: "User Management" },
+      { title: "Roles", href: "/users-management/roles" },
     ]);
   }, []);
 

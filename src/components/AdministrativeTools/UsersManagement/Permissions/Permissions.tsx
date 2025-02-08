@@ -9,6 +9,7 @@ import { getPermissionColumns } from "./data-table/columns";
 import { PermissionActionsContext } from "./data-table/ActionContext";
 import { usePermissionSeedDialog } from "./modal/PermissionSeedDialog";
 import { toast } from "sonner";
+import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 interface PermissionsProps {
   className?: string;
@@ -18,15 +19,14 @@ export default function Permissions({ className }: PermissionsProps) {
   //next-router
   const router = useRouter();
 
-  //set page title in the breadcrumb
-  //   const { setRoutes } = useBreadcrumb();
-  //   React.useEffect(() => {
-  //     setRoutes([
-  //       { title: tCommon('menu.administrative_tools') },
-  //       { title: tCommon('submenu.user_management') },
-  //       { title: tCommon('settings.user_management.permissions') }
-  //     ]);
-  //   }, [router.locale]);
+  // set page title in the breadcrumb
+  const { setRoutes } = useBreadcrumb();
+  React.useEffect(() => {
+    setRoutes?.([
+      { title: "User Management" },
+      { title: "Permissions", href: "/users-management/permissions" },
+    ]);
+  }, []);
 
   const [page, setPage] = React.useState(1);
   const { value: debouncedPage, loading: paging } = useDebounce<number>(
