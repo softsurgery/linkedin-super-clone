@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import container from "@/lib/container";
 
-const userService = container.UserService;
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const userService = container.UserService;
   try {
     switch (req.method) {
       case "GET": {

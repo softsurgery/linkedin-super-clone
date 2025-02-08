@@ -1,13 +1,11 @@
-// pages/api/permission/index.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import container from "@/lib/container";
-
-const roleService = container.RoleService;
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const roleService = container.RoleService;
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }

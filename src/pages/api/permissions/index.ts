@@ -1,23 +1,19 @@
-// pages/api/permission/index.ts
+import container from "@/lib/container";
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-import { PermissionRepository } from "@/lib/users-management/repositories/permission.repository";
-
-const prisma = new PrismaClient();
-const permissionRepo = new PermissionRepository(prisma);
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const permissionService = container.PermissionService;
   try {
     switch (req.method) {
       case "GET": {
-        const permissions = await permissionRepo.findAll();
+        const permissions = await permissionService.getAllPermissions(req.query);
         return res.status(200).json(permissions);
       }
       case "POST": {
-        const permission = await permissionRepo.create(req.body);
+        const permission = await permissionService.createPermission(req.body);
         return res.status(201).json(permission);
       }
       default:

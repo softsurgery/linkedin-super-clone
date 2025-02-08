@@ -1,7 +1,5 @@
-// pages/api/permission/[id].ts
 import { NextApiRequest, NextApiResponse } from "next";
 import container from "@/lib/container";
-import { RoleService } from "@/lib/users-management/services/role.service";
 
 export default async function handler(
   req: NextApiRequest,
