@@ -1,15 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 
-import { IQueryObject } from "../interfaces/query-params";
+import { IOptionsObject, IQueryObject } from "../interfaces/query-params";
 import {
   parseFilters,
   parseJoin,
   parseSelect,
   parseSort,
-} from "../utilities/query-params-transpiler";
+} from "../utilities/query-params-parser";
 import { Paginated } from "../interfaces/pagination";
 
-export class BaseRepository<T extends Record<string, any>> {
+export class BaseRepository<T> {
   protected prisma: PrismaClient;
   protected model: any;
 
@@ -18,10 +18,23 @@ export class BaseRepository<T extends Record<string, any>> {
     this.prisma = prisma;
   }
 
-  async findPaginated(queryObject: IQueryObject): Promise<Paginated<T>> {
-    const { filter, sort, size = "10", page = "1", fields, join } = queryObject;
+  async findPaginated(
+    queryObject: IQueryObject,
+    options: IOptionsObject = {},
+    supportSoftDelete: boolean = false): Promise<Paginated<T>> {
+    const {
+      filter,
+      sort,
+      size = options.DEFAULT_LIMIT || "10",
+      page = "1",
+      fields,
+      join,
+    } = queryObject;
 
-    const where = parseFilters(filter);
+    let where = parseFilters(filter, options);
+    if (!supportSoftDelete) {
+      where = { ...where, deletedAt: null };
+    }
     const orderBy = parseSort(sort);
     const take = parseInt(size, 10);
     const skip = (parseInt(page, 10) - 1) * take;
@@ -51,18 +64,28 @@ export class BaseRepository<T extends Record<string, any>> {
         hasPreviousPage: parsedPage > 1,
         hasNextPage: itemCount > take * parsedPage,
         pageCount: Math.ceil(itemCount / take),
-      },
+      }
     };
   }
 
-  async findAll() {
+  async findAll(supportSoftDelete: boolean = false): Promise<T[]> {
+    if (!supportSoftDelete) {
+      return this.model.findMany({ where: { deletedAt: null } });
+    }
     return this.model.findMany();
   }
 
-  async findByCondition(queryObject: IQueryObject): Promise<T[]> {
+  async findByCondition(
+    queryObject: IQueryObject,
+    options: IOptionsObject = {},
+    supportSoftDelete: boolean = false
+  ): Promise<T[]> {
     const { filter, sort, fields, join } = queryObject;
 
-    const where = parseFilters(filter);
+    let where = parseFilters(filter, options);
+    if (!supportSoftDelete) {
+      where = { ...where, deletedAt: null };
+    }
     const orderBy = parseSort(sort);
     const select = parseSelect(fields);
     const include = parseJoin(join);
@@ -76,32 +99,30 @@ export class BaseRepository<T extends Record<string, any>> {
   }
 
   async findOneByCondition(
-    queryObject: IQueryObject
+    queryObject: IQueryObject,
+    options: IOptionsObject = {},
+    supportSoftDelete: boolean = false
   ): Promise<T | null> {
-    const models = await this.findByCondition(queryObject);
+    const models = await this.findByCondition(queryObject, options, supportSoftDelete);
     return models.length > 0 ? models[0] : null;
   }
 
-  async findById(id: number | string) {
+  async findById(id: number | string, supportSoftDelete: boolean = false): Promise<T | null> {
+    if (!supportSoftDelete) {
+      return this.model.findUnique({ where: { id, deletedAt: null } });
+    }
     return this.model.findUnique({ where: { id } });
   }
 
-  async create(data: Partial<T>) {
-    try {
-
-      const user = await this.model.create({ data });
-      return user;
-    } catch (err) {
-      console.error(err);
-      throw new Error("Failed to create record");
-    }
+  async create(data: Partial<T>): Promise<T> {
+    return this.model.create({ data });
   }
 
   async createMany(data: Partial<T>[]): Promise<T[]> {
     return this.model.createMany({ data });
   }
 
-  async update(id: number | string, data: Partial<T>) {
+  async update(id: number | string, data: Partial<T>): Promise<T> {
     return this.model.update({
       where: { id },
       data,
@@ -123,11 +144,11 @@ export class BaseRepository<T extends Record<string, any>> {
   }): Promise<{
     keptItems: U[];
     newItems: U[];
-    eliminatedItems: any[];
+    eliminatedItems: U[];
   }> {
     const newItems: U[] = [];
     const keptItems: U[] = [];
-    const eliminatedItems: any[] = [];
+    const eliminatedItems: U[] = [];
 
     const [key1, key2] = keys;
 
@@ -141,7 +162,6 @@ export class BaseRepository<T extends Record<string, any>> {
       if (!existsInUpdate) {
         eliminatedItems.push(await onDelete(existingItem.id!));
       } else {
-        // Otherwise, keep the item
         keptItems.push(existingItem);
       }
     }
@@ -154,7 +174,6 @@ export class BaseRepository<T extends Record<string, any>> {
         newItems.push(await onCreate(updatedItem));
       }
     }
-
     return {
       keptItems,
       newItems,
@@ -162,13 +181,45 @@ export class BaseRepository<T extends Record<string, any>> {
     };
   }
 
-  async delete(id: number | string) {
+  async softDelete(id: number | string): Promise<T> {
+    return this.model.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  async softDeleteMany(ids: number[] | string[]): Promise<T[]> {
+    return this.model.updateMany({
+      where: { id: { in: ids } },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  async restore(id: number | string): Promise<T> {
+    return this.model.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+  }
+
+  async restoreMany(ids: number[] | string[]): Promise<T[]> {
+    return this.model.updateMany({
+      where: { id: { in: ids } },
+      data: { deletedAt: null },
+    });
+  }
+
+  async delete(id: number | string): Promise<T> {
     return this.model.delete({
       where: { id },
     });
   }
 
-  async count(where: any = {}) {
+  async deleteMany(ids: number[] | string[]): Promise<T[]> {
+    return this.model.deleteMany({ where: { id: { in: ids } } });
+  }
+
+  async count(where: any = {}): Promise<number> {
     return this.model.count({ where });
   }
 }
