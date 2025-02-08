@@ -10,6 +10,8 @@ import { PermissionActionsContext } from "./data-table/ActionContext";
 import { usePermissionSeedDialog } from "./modal/PermissionSeedDialog";
 import { toast } from "sonner";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+import { PERMISSION_FILTER_FIELDS } from "@/constants/permission.filter-fields";
+import { cn } from "@/lib/utils";
 
 interface PermissionsProps {
   className?: string;
@@ -69,9 +71,14 @@ export default function Permissions({ className }: PermissionsProps) {
       api.permission.findPaginated(
         debouncedPage,
         debouncedSize,
-        debouncedSortDetails.order ? "ASC" : "DESC",
-        debouncedSortDetails.sortKey,
+        `${debouncedSortDetails.sortKey}:${
+          debouncedSortDetails.order ? "ASC" : "DESC"
+        }`,
         debouncedSearchTerm
+          ? `(${Object.values(PERMISSION_FILTER_FIELDS)
+              .map((field) => `${field}||$cont||${debouncedSearchTerm}`)
+              .join(";")}})`
+          : ""
       ),
   });
 
@@ -121,7 +128,11 @@ export default function Permissions({ className }: PermissionsProps) {
     isPermissionsPending || paging || resizing || searching || sorting;
   return (
     <PermissionActionsContext.Provider value={context}>
-      <ContentSection title="Permissions" desc="Permissions" className="w-full">
+      <ContentSection
+        title="Permissions"
+        desc="Permissions"
+        className={cn("w-full", className)}
+      >
         <DataTable
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
