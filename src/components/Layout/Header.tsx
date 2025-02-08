@@ -1,6 +1,6 @@
 import React from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { PanelLeft, Search } from "lucide-react";
+import { PanelLeft, Search, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -16,7 +16,6 @@ import { MenuItem } from "./StaticMenu";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import { ModeToggle } from "../Common/ModeToggle";
-import Image from "next/image";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { Breadcrumb } from "../Common/Breadcrumb";
 
@@ -30,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ className, items }) => {
   const { routes } = useBreadcrumb();
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:border-0 sm:bg-transparent sm:px-6">
+    <header className="sticky top-0 z-30 flex min-h-14 items-center gap-4 border-b bg-background px-4">
       <Sheet>
         <SheetTrigger asChild>
           <Button size="icon" variant="outline" className="sm:hidden">
@@ -59,13 +58,7 @@ export const Header: React.FC<HeaderProps> = ({ className, items }) => {
             size="icon"
             className="overflow-hidden rounded-full"
           >
-            <Image
-              src="/placeholder-user.jpg"
-              width={36}
-              height={36}
-              alt="Avatar"
-              className="overflow-hidden rounded-full"
-            />
+            <User />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
