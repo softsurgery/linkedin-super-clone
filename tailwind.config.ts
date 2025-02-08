@@ -1,18 +1,14 @@
-import type { Config } from 'tailwindcss'
+/** @type {import('tailwindcss').Config} */
+import tailwindcssAnimate from "tailwindcss-animate";
 
-const config: Config = {
-    darkMode: ['class'],
-    content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+export default {
+  darkMode: ["class"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
   	extend: {
-  		backgroundImage: {
-  			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-  			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))'
-  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -59,9 +55,21 @@ const config: Config = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
+  		},
+  		animation: {
+  			'fade-in': 'fadeIn 2s ease-in-out'
+  		},
+  		keyframes: {
+  			fadeIn: {
+  				'0%': {
+  					opacity: 0
+  				},
+  				'100%': {
+  					opacity: 1
+  				}
+  			}
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate, require("tailwindcss-animate")],
 }
-export default config
