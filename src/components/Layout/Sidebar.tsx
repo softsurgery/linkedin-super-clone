@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { MenuItem } from "./StaticMenu";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { UserDropdown } from "./UserDropdown";
 
 interface SidebarProps {
   className?: string;
@@ -20,7 +21,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ className, items }) => {
   const router = useRouter();
   return (
-    <React.Fragment>
+    <div className="flex flex-col justify-between h-full">
       <nav
         className={cn(
           "flex flex-col items-center gap-4 px-2 sm:py-5",
@@ -59,6 +60,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, items }) => {
           })}
         </TooltipProvider>
       </nav>
-    </React.Fragment>
+      <nav
+        className={cn(
+          "flex flex-col items-center gap-4 px-2 sm:py-5",
+          className
+        )}
+      >
+        <UserDropdown />
+      </nav>
+    </div>
   );
 };
