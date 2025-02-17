@@ -6,6 +6,7 @@ export interface User {
   lastName: string | null;
   dateOfBirth: Date | null;
   isActive: boolean | null;
+  password: string | null;
   username: string | null;
   email: string | null;
   emailVerified: Date | null;
@@ -16,6 +17,7 @@ export interface User {
   role?: Role | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface Account {
@@ -35,6 +37,7 @@ export interface Account {
   user?: User | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface Session {
@@ -45,6 +48,7 @@ export interface Session {
   user?: User;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface VerificationToken {
@@ -61,6 +65,7 @@ export interface Role {
   users?: User[];
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface Permission {
@@ -70,6 +75,7 @@ export interface Permission {
   roles?: RolePermission[];
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface RolePermission {
@@ -80,4 +86,5 @@ export interface RolePermission {
   permission?: Permission;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }

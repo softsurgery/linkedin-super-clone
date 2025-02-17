@@ -4,6 +4,7 @@ import React from "react";
 import { ConnectComponent } from "./ConnectComponent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { RegisterComponent } from "./RegisterComponent";
+import { useAuthStore } from "@/hooks/store/useAuthStore";
 
 interface AuthenticationPageProps {
   className?: string;
@@ -14,6 +15,7 @@ export default function AuthenticationPage({
 }: AuthenticationPageProps) {
   const router = useRouter();
   const authContext = React.useContext(AuthContext);
+  const authStore = useAuthStore();
   React.useEffect(() => {
     if (authContext.authenticated) router.reload();
   }, []);
@@ -21,7 +23,11 @@ export default function AuthenticationPage({
     <div
       className={`flex h-screen items-center justify-center ${className || ""}`}
     >
-      <Tabs defaultValue="connect" className="w-[400px]">
+      <Tabs
+        defaultValue="connect"
+        className="w-[400px]"
+        onValueChange={authStore.reset}
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="connect">Connect</TabsTrigger>
           <TabsTrigger value="register">Register</TabsTrigger>
