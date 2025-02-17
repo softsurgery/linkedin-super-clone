@@ -14,11 +14,11 @@ import { Label } from "@/components/ui/label"
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account."
 
-export function ConnectComponent() {
+export function RegisterComponent() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Connect</CardTitle>
+        <CardTitle className="text-2xl">Register</CardTitle>
         <CardDescription>
           Enter your email below to login to your account
         </CardDescription>

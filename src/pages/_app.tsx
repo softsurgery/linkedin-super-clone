@@ -6,6 +6,7 @@ import { AppProps } from "next/app";
 import '@/styles/globals.css';
 import { AuthProvider } from "@/context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AuthenticationPage from "@/components/Auth/AuthenticationPage";
 
 const inter = Inter({ subsets: ["latin"] });
 const queryClient = new QueryClient();
@@ -26,10 +27,11 @@ export default function Home({ Component, pageProps }: AppProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <Application
+          {/* <Application
             Component={Component}
             pageProps={pageProps}
-          />
+          /> */}
+          <AuthenticationPage/>
         </ThemeProvider>
       </AuthProvider>
       </QueryClientProvider>

@@ -6,11 +6,14 @@ import { PermissionRepository } from "./users-management/repositories/permission
 import { RolePermissionRepository } from "./users-management/repositories/role-permission.repository";
 import { UserService } from "./users-management/services/user.service";
 import { UserRepository } from "./users-management/repositories/user.repository";
+import { AuthService } from "./auth/services/auth.service";
 
 const prisma = new PrismaClient();
+const userService = new UserService(new UserRepository(prisma));
 
 const container = {
-  UserService: new UserService(new UserRepository(prisma)),
+  AuthService: new AuthService(userService),
+  UserService: userService,
   RoleService: new RoleService(
     new RoleRepository(prisma),
     new RolePermissionRepository(prisma)
