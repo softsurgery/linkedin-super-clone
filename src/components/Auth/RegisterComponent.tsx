@@ -1,3 +1,4 @@
+import { api } from "@/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,13 +11,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/hooks/store/useAuthStore";
 import { cn } from "@/lib/utils";
+import { RegisterPayload } from "@/types";
 import { registerSchema } from "@/types/validations/auth.validation";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account.";
 
 export function RegisterComponent() {
   const authStore = useAuthStore();
+
+  const { mutate: register, isPending: isRegisterationPending } = useMutation({
+    mutationFn: (payload: RegisterPayload) => api.auth.register(payload),
+    onSuccess: (data) => {
+      toast.success("User registered successfully");
+    },
+    onError: (error) => {
+      authStore.set("errors", {});
+    },
+  });
 
   const handleRegister = () => {
     const registerObject = {
@@ -30,7 +44,7 @@ export function RegisterComponent() {
       authStore.set("errors", result.error.flatten().fieldErrors);
     } else {
       authStore.set("errors", {});
-      // connectUser();
+      register(registerObject);
     }
   };
 
