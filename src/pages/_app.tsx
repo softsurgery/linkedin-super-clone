@@ -3,10 +3,9 @@ import Application from "@/components/Application";
 import Head from "next/head";
 import { ThemeProvider } from "next-themes";
 import { AppProps } from "next/app";
-import '@/styles/globals.css';
+import "@/styles/globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AuthenticationPage from "@/components/Auth/AuthenticationPage";
 
 const inter = Inter({ subsets: ["latin"] });
 const queryClient = new QueryClient();
@@ -14,26 +13,26 @@ export default function Home({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Gestion Stage</title>
-        <meta name="description" content="ZC-Invoice" />
+        <title>NetSphere</title>
+        <meta name="description" content="NetSphere" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {/* <Application
-            Component={Component}
-            pageProps={pageProps}
-          /> */}
-          <AuthenticationPage/>
-        </ThemeProvider>
-      </AuthProvider>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Application
+              Component={Component}
+              pageProps={pageProps}
+              className={inter.className}
+            />
+          </ThemeProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </>
   );
