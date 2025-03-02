@@ -11,7 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/hooks/store/useAuthStore";
 import { cn } from "@/lib/utils";
-import { RegisterPayload } from "@/types";
+import {
+  RegisterPayload,
+  ServerErrorResponse,
+  ServerResponse,
+  User,
+} from "@/types";
 import { registerSchema } from "@/types/validations/auth.validation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -19,16 +24,21 @@ import { toast } from "sonner";
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account.";
 
-export function RegisterComponent() {
+interface RegisterComponentProps {
+  className?: string;
+}
+
+export function RegisterComponent({ className }: RegisterComponentProps) {
   const authStore = useAuthStore();
 
   const { mutate: register, isPending: isRegisterationPending } = useMutation({
     mutationFn: (payload: RegisterPayload) => api.auth.register(payload),
-    onSuccess: (data) => {
-      toast.success("User registered successfully");
+    onSuccess: (data: ServerResponse<User>) => {
+      toast.success(data.message);
+      authStore.reset();
     },
-    onError: (error) => {
-      authStore.set("errors", {});
+    onError: (error: ServerErrorResponse) => {
+      toast.error(error.response?.data.error);
     },
   });
 
@@ -49,7 +59,7 @@ export function RegisterComponent() {
   };
 
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className={cn("mx-auto max-w-sm", className)}>
       <CardHeader>
         <CardTitle className="text-2xl">Register</CardTitle>
         <CardDescription>
@@ -75,6 +85,7 @@ export function RegisterComponent() {
                   username: {},
                 });
               }}
+              disabled={isRegisterationPending}
             />
             {authStore?.errors?.username?.[0] && (
               <p className="text-red-500 text-xs font-bold">
@@ -97,6 +108,7 @@ export function RegisterComponent() {
                   email: {},
                 });
               }}
+              disabled={isRegisterationPending}
             />
             {authStore?.errors?.email?.[0] && (
               <p className="text-red-500 text-xs font-bold">
@@ -121,6 +133,7 @@ export function RegisterComponent() {
                   password: {},
                 });
               }}
+              disabled={isRegisterationPending}
             />
             {authStore?.errors?.password?.[0] && (
               <p className="text-red-500 text-xs font-bold">
@@ -145,6 +158,7 @@ export function RegisterComponent() {
                   confirmPassword: {},
                 });
               }}
+              disabled={isRegisterationPending}
             />
             {authStore?.errors?.confirmPassword?.[0] && (
               <p className="text-red-500 text-xs font-bold">
@@ -152,7 +166,11 @@ export function RegisterComponent() {
               </p>
             )}
           </div>
-          <Button className="w-full" onClick={handleRegister}>
+          <Button
+            className="w-full"
+            onClick={handleRegister}
+            disabled={isRegisterationPending}
+          >
             Register
           </Button>
         </div>

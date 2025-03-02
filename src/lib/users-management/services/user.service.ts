@@ -2,6 +2,7 @@ import { IQueryObject } from "@/lib/prisma/interfaces/query-params";
 import { Paginated } from "@/lib/prisma/interfaces/pagination";
 import { User } from "@/types/user-management";
 import { UserRepository } from "../repositories/user.repository";
+import { hashPassword } from "@/lib/utils/hash.util";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -22,13 +23,13 @@ export class UserService {
     return this.userRepository.findById(id);
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOneByCondition({
-      filter: `email||$eq||${email}`,
-    });
+  async getUserByCondition(queryObject: IQueryObject): Promise<User | null> {
+    return this.userRepository.findOneByCondition(queryObject);
   }
 
   async createUser(data: Partial<User>): Promise<User> {
+    const hashedPassword = data.password && (await hashPassword(data.password));
+    data.password = hashedPassword;
     return this.userRepository.create(data);
   }
 

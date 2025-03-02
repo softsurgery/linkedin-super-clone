@@ -1,16 +1,9 @@
-import { RegisterPayload } from "@/types";
+import { ConnectPayload, RegisterPayload } from "@/types";
 import axios from "axios";
 
-const login = async (email: string, password: string) => {
-  try {
-    const response = await axios.post(`/api/auth/login`, {
-      email,
-      password,
-    });
-    return response.data;
-  } catch (error: any) {
-    throw error.response?.data || "Login failed";
-  }
+const connect = async (payload: ConnectPayload) => {
+  const response = await axios.post(`/api/auth/connect`, payload);
+  return response.data;
 };
 
 const register = async (payload: RegisterPayload) => {
@@ -37,7 +30,7 @@ const getCurrentUser = async () => {
 };
 
 export const auth = {
-  login,
+  connect,
   register,
   logout,
   getCurrentUser,

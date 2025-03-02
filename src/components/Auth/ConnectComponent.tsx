@@ -14,12 +14,26 @@ import { useAuthStore } from "@/hooks/store/useAuthStore";
 import { Goal } from "lucide-react";
 import { connectSchema } from "@/types/validations/auth.validation";
 import { cn } from "@/lib/utils";
+import { ConnectPayload, ServerErrorResponse, ServerResponse } from "@/types";
+import { api } from "@/api";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account.";
 
 export function ConnectComponent() {
   const authStore = useAuthStore();
+
+  const { mutate: connect, isPending: isConnectPending } = useMutation({
+    mutationFn: (payload: ConnectPayload) => api.auth.connect(payload),
+    onSuccess: (data: ServerResponse) => {
+      toast.success(data.message);
+    },
+    onError: (error: ServerErrorResponse) => {
+      toast.error(error.response?.data?.error);
+    },
+  });
 
   const handleConnect = () => {
     const connectObject = {
@@ -30,8 +44,7 @@ export function ConnectComponent() {
     if (!result.success) {
       authStore.set("errors", result.error.flatten().fieldErrors);
     } else {
-      authStore.set("errors", {});
-      // connectUser();
+      connect(connectObject);
     }
   };
 
@@ -62,6 +75,7 @@ export function ConnectComponent() {
                   usernameOrEmail: {},
                 });
               }}
+              disabled={isConnectPending}
             />
             {authStore?.errors?.usernameOrEmail?.[0] && (
               <p className="text-red-500 text-xs font-bold">
@@ -88,6 +102,7 @@ export function ConnectComponent() {
                 authStore.set("password", e.target.value);
                 authStore.set("errors", { ...authStore.errors, password: {} });
               }}
+              disabled={isConnectPending}
             />
             {authStore?.errors?.password?.[0] && (
               <p className="text-red-500 text-xs font-bold">
@@ -95,7 +110,11 @@ export function ConnectComponent() {
               </p>
             )}
           </div>
-          <Button className="w-full" onClick={handleConnect}>
+          <Button
+            className="w-full"
+            onClick={handleConnect}
+            disabled={isConnectPending}
+          >
             <Goal /> Connect
           </Button>
         </div>
