@@ -19,7 +19,10 @@ function Application({ className, Component, pageProps }: ApplicationProps) {
   const router = useRouter();
   const authPersistStore = useAuthPersistStore();
 
-  // Show a loading screen for admin routes
+  if (router.pathname === "/disconnect") {
+    return null;
+  }
+
   if (router.pathname.includes("admin")) {
     return (
       <main className="min-h-screen flex items-center justify-center">
@@ -52,7 +55,6 @@ function Application({ className, Component, pageProps }: ApplicationProps) {
           <AuthenticationPage />
         )}
       </div>
-
       <Toaster />
     </div>
   );

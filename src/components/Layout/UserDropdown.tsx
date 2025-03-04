@@ -44,7 +44,7 @@ export const UserDropdown = ({ className }: UserDropdownProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="flex flex-row items-center"
-          onClick={() => router.push("/sign-out")}
+          onClick={() => router.push("/disconnect")}
         >
           <ExitIcon className="h-6 w-6" /> Logout
         </DropdownMenuItem>

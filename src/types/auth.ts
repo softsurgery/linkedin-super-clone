@@ -1,3 +1,5 @@
+import { User } from "./user-management";
+
 export interface RegisterPayload {
   username: string;
   email: string;
@@ -7,4 +9,10 @@ export interface RegisterPayload {
 export interface ConnectPayload {
   usernameOrEmail: string;
   password: string;
+}
+
+export interface ConnectResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
 }

@@ -14,21 +14,31 @@ import { useAuthStore } from "@/hooks/store/useAuthStore";
 import { Goal } from "lucide-react";
 import { connectSchema } from "@/types/validations/auth.validation";
 import { cn } from "@/lib/utils";
-import { ConnectPayload, ServerErrorResponse, ServerResponse } from "@/types";
+import {
+  ConnectPayload,
+  ConnectResponse,
+  ServerErrorResponse,
+  ServerResponse,
+} from "@/types";
 import { api } from "@/api";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useAuthPersistStore } from "@/hooks/store/useAuthPersistStore";
 
 export const description =
   "A login form with email and password. There's an option to login with Google and a link to sign up if you don't have an account.";
 
 export function ConnectComponent() {
   const authStore = useAuthStore();
+  const authPersistStore = useAuthPersistStore();
 
   const { mutate: connect, isPending: isConnectPending } = useMutation({
     mutationFn: (payload: ConnectPayload) => api.auth.connect(payload),
-    onSuccess: (data: ServerResponse) => {
-      toast.success(data.message);
+    onSuccess: (response: ServerResponse<ConnectResponse>) => {
+      authPersistStore.setAccessToken(response.data?.accessToken);
+      authPersistStore.setRefreshToken(response.data?.refreshToken);
+      authPersistStore.setAuthenticated(true);
+      toast.success(response.message);
     },
     onError: (error: ServerErrorResponse) => {
       toast.error(error.response?.data?.error);

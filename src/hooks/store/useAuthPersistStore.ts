@@ -1,22 +1,33 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AuthPersistData {
-  token: string;
-  isAuthenticated: boolean | null;
-  setToken: (token: string) => void;
+  accessToken: string;
+  refreshToken: string;
+  isAuthenticated: boolean;
+}
+
+interface AuthPersistStore extends AuthPersistData {
+  setAccessToken: (token: string) => void;
+  setRefreshToken: (token: string) => void;
   setAuthenticated: (isAuth: boolean) => void;
   logout: () => void;
 }
 
+const authPersistStore: AuthPersistData = {
+  accessToken: "",
+  refreshToken: "",
+  isAuthenticated: false,
+};
+
 export const useAuthPersistStore = create(
-  persist<AuthPersistData>(
+  persist<AuthPersistStore>(
     (set) => ({
-      token: "",
-      isAuthenticated: null,
-      setToken: (token) => set({ token }),
-      setAuthenticated: (isAuth) => set({ isAuthenticated: isAuth }),
-      logout: () => set({ isAuthenticated: false, token: "" }),
+      ...authPersistStore,
+      setAccessToken: (token: string) => set({ accessToken: token }),
+      setRefreshToken: (token: string) => set({ refreshToken: token }),
+      setAuthenticated: (isAuth: boolean) => set({ isAuthenticated: isAuth }),
+      logout: () => set(authPersistStore),
     }),
     {
       name: "auth-storage",

@@ -3,7 +3,7 @@ import { AxiosError } from "axios";
 export interface ServerResponse<T = undefined> {
   message: string;
   code: number;
-  data?: T;
+  data: T;
 }
 
 interface ServerError {
