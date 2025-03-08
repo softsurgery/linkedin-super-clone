@@ -32,21 +32,27 @@ function Application({ className, Component, pageProps }: ApplicationProps) {
   }
 
   return (
-    <div className={cn(`relative flex flex-col flex-1 min-h-screen`, className)}>
-      <div className="absolute inset-0 w-full h-full -z-10">
-        <Image
-          src="/bg.jpg"
-          alt="Background"
-          layout="fill"
-          objectFit="cover"
-          priority
-          quality={90}
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
-      </div>
+    <div
+      className={cn(`relative flex flex-col flex-1 overflow-hidden min-h-screen max-h-screen`, className)}
+    >
+      {!authPersistStore.isAuthenticated && (
+        <div className="absolute inset-0 w-full h-full -z-10">
+          (
+          <Image
+            src="/bg.jpg"
+            alt="Background"
+            layout="fill"
+            objectFit="cover"
+            priority
+            quality={90}
+          />
+          )
+          <div className="absolute inset-0 bg-black bg-opacity-50" />
+        </div>
+      )}
 
       {/* App Content */}
-      <div className="relative flex flex-col flex-1">
+      <div className="relative flex flex-col flex-1 overflow-hidden">
         {authPersistStore.isAuthenticated ? (
           <Layout className="flex w-full">
             <Component {...pageProps} />

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { LifeBuoy, Settings, Settings2, User, UserPen } from "lucide-react";
 import { useRouter } from "next/router";
 import { ExitIcon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
+import { useAuthPersistStore } from "@/hooks/store/useAuthPersistStore";
 
 interface UserDropdownProps {
   className?: string;
@@ -17,13 +19,14 @@ interface UserDropdownProps {
 
 export const UserDropdown = ({ className }: UserDropdownProps) => {
   const router = useRouter();
+  const authPersistStore = useAuthPersistStore();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
           size="icon"
-          className="overflow-hidden rounded-full"
+          className={cn("overflow-hidden rounded-full", className)}
         >
           <User />
         </Button>
@@ -44,7 +47,7 @@ export const UserDropdown = ({ className }: UserDropdownProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="flex flex-row items-center"
-          onClick={() => router.push("/disconnect")}
+          onClick={() => authPersistStore.logout()}
         >
           <ExitIcon className="h-6 w-6" /> Logout
         </DropdownMenuItem>
