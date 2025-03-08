@@ -37,10 +37,16 @@ export const UserDropdown = ({ className }: UserDropdownProps) => {
         <DropdownMenuItem className="flex flex-row items-center">
           <UserPen className="h-6 w-6" /> Profile
         </DropdownMenuItem>
-        <DropdownMenuItem className="flex flex-row items-center">
+        <DropdownMenuItem
+          className="flex flex-row items-center"
+          onClick={() => router.push("/settings")}
+        >
           <Settings className="h-6 w-6" /> Settings
         </DropdownMenuItem>
-        <DropdownMenuItem className="flex flex-row items-center">
+        <DropdownMenuItem
+          className="flex flex-row items-center"
+          onClick={() => router.push("/support")}
+        >
           <LifeBuoy className="h-6 w-6" />
           Support
         </DropdownMenuItem>
