@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "module": "ESNext",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,

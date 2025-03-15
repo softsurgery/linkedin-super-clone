@@ -1,0 +1,8 @@
+{
+    "app-menu" : {
+        "home": "Accueil",
+        "profile": "Profil",
+        "user-management": "Gestion des utilisateurs",
+        "settings": "Paramètres"
+    }
+}
